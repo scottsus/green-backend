@@ -24,7 +24,7 @@ def init_chat():
     )
 
     # 2. Load Document
-    file_path = './README.md'
+    file_path = './docs.md'
     with open(file_path) as f:
         data = f.read()
     # print(data)
