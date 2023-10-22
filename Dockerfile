@@ -15,8 +15,6 @@ COPY . .
 
 # Define environment variables (optional)
 ENV FLASK_APP=server.py
-# ENV FLASK_RUN_HOST=0.0.0.0
-ENV OPENAI_API_KEY=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
 
 # Expose port 5000 for the Flask app to listen on
 EXPOSE 5000
