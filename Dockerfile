@@ -16,8 +16,8 @@ COPY . .
 # Define environment variables (optional)
 ENV FLASK_APP=server.py
 
-# Expose port 5001 for the Flask app to listen on
-EXPOSE 5001
+# Expose port 5000 for the Flask app to listen on
+EXPOSE 5000
 
 # Command to run the Flask application
 CMD ["flask", "run"]
