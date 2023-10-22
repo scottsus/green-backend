@@ -17,6 +17,7 @@ dataclasses-json==0.6.1
 fastapi==0.104.0
 filelock==3.12.4
 Flask==3.0.0
+Flask-Cors==4.0.0
 flatbuffers==23.5.26
 frozenlist==1.4.0
 fsspec==2023.10.0
