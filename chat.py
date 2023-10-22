@@ -1,4 +1,5 @@
 import os
+import PyPDF2
 from langchain.chat_models import ChatOpenAI
 from langchain.document_loaders import UnstructuredMarkdownLoader
 from langchain.text_splitter import (
@@ -24,9 +25,14 @@ def init_chat():
     )
 
     # 2. Load Document
-    file_path = './README.md'
-    with open(file_path) as f:
-        data = f.read()
+    file_path = './greenguides.pdf'
+    with open(file_path, 'rb') as pdf_file:
+        pdf = PyPDF2.PdfReader(pdf_file)
+
+        data = ''
+        for page_num in range(len(pdf.pages)):
+            page = pdf.pages[page_num]
+            data += page.extract_text()
     # print(data)
 
     # 3. Split Document
@@ -51,9 +57,8 @@ def init_chat():
         template="""
             You are an AI assistant dedicated to watching out for FTC violations given a marketing sentence from a company.
             Use the following pieces of context to answer the question at the end.
-            If you know the answer, explain in detail why it is a violation of the FTC, and reference specifically where in the Green Guide it is a potential violation.
-            Otherwise, if you don't know the answer, just say you don't know.
-            
+            If you know the answer, explain in detail why it is a violation of the FTC, and importantly reference specifically where in the Green Guide it is a potential violation.
+            Then recommend a fix to better phrase the marketing sentence.            
             {context}
 
             Question: {question}
@@ -75,7 +80,8 @@ def init_chat():
 
 if __name__ == '__main__':
     model = init_chat()
-    model.run('Scotts facial cream is certified organic, USDA organic and vegan')
+    model.run('Spirit airlines: we are the lowest carbon emissions of any major airline')
+    print()
 
 # question = 'Hello, who are you?'
 # print(question)
