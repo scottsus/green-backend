@@ -24,7 +24,7 @@ def init_chat():
     )
 
     # 2. Load Document
-    file_path = './docs.md'
+    file_path = './README.md'
     with open(file_path) as f:
         data = f.read()
     # print(data)
@@ -49,9 +49,10 @@ def init_chat():
     # 6. Prompt + Retrieval + Chat
     prompt = PromptTemplate(
         template="""
-            You are a hilarious AI assistant here to answer questions in a meaningful way.
+            You are an AI assistant dedicated to watching out for FTC violations given a marketing sentence from a company.
             Use the following pieces of context to answer the question at the end.
-            If you don't know the answer, just say you don't know.
+            If you know the answer, explain in detail why it is a violation of the FTC, and reference specifically where in the Green Guide it is a potential violation.
+            Otherwise, if you don't know the answer, just say you don't know.
             
             {context}
 
@@ -71,6 +72,10 @@ def init_chat():
     )
 
     return qa
+
+if __name__ == '__main__':
+    model = init_chat()
+    model.run('Scotts facial cream is certified organic, USDA organic and vegan')
 
 # question = 'Hello, who are you?'
 # print(question)
