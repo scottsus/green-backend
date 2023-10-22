@@ -10,10 +10,12 @@ from langchain.text_splitter import (
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.chains import RetrievalQA
+from langchain.output_parsers import PydanticOutputParser
+from langchain.pydantic_v1 import BaseModel, Field, validator
 from langchain.prompts import PromptTemplate
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
-def init_chat():
+def init_chat(prompt0):
     openai_api_key = os.environ.get('OPENAI_API_KEY')
 
     # 1. Model
@@ -52,19 +54,27 @@ def init_chat():
     # docs = retriever.get_relevant_documents(query)
     # ans = qa(query)
 
+    class ViolationCheck(BaseModel):
+        user_violation: str = Field(description='marketing violation made by user')
+        section_number: str = Field(description='FTC section 2xx explaining the violation')
+        recommendation: str = Field(description='better way to rephrase marketing sentence')
+    parser = PydanticOutputParser(pydantic_object=ViolationCheck)
+
     # 6. Prompt + Retrieval + Chat
     prompt = PromptTemplate(
         template="""
             You are an AI assistant dedicated to watching out for FTC violations given a marketing sentence from a company.
             Use the following pieces of context to answer the question at the end.
-            If you know the answer, explain in detail why it is a violation of the FTC, and importantly reference specifically where in the Green Guide it is a potential violation.
-            Then recommend a fix to better phrase the marketing sentence.            
+            If you know the answer, explain in detail why it is a violation of the FTC, and most importantly reference the section number 2xx in the Green Guide.
+            Then recommend a fix to better phrase the marketing sentence.
+            Otherwise if you don't know the answer say you don't know.
             {context}
 
             Question: {question}
-            Answer:
+            Answer: {format_instructions}
         """,
-        input_variables=['context', 'question']
+        input_variables=['context', 'question'],
+        partial_variables={'format_instructions': parser.get_format_instructions()},
     )
 
     qa = RetrievalQA.from_chain_type(
@@ -76,11 +86,15 @@ def init_chat():
         }
     )
 
-    return qa
+    output = qa.run(prompt0)
+    parser.parse(output)
+
+    # return qa
 
 if __name__ == '__main__':
-    model = init_chat()
-    model.run('Spirit airlines: we are the lowest carbon emissions of any major airline')
+    prompt = 'Spirit airlines: we are the lowest carbon emissions of any major airline'
+    model = init_chat(prompt)
+    # model.run('Scotts facial cream is certified organic, USDA organic and vegan')
     print()
 
 # question = 'Hello, who are you?'
