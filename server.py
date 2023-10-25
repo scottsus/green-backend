@@ -6,6 +6,11 @@ app = Flask(__name__)
 CORS(app)
 model, parser = init_chat()
 
+@app.route('/')
+def home():
+    print('Endpoint hit!')
+    return jsonify({"message": "Hello there 👋"})
+
 @app.route('/chat', methods=['GET'])
 def chat():
     query = request.args.get('query')
@@ -19,4 +24,4 @@ def chat():
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5050)
