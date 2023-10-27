@@ -16,6 +16,7 @@ def init_chat():
     # 1. Model
     chat = ChatOpenAI(
         openai_api_key=openai_api_key,
+        model='gpt-4',
         streaming=True,
         callbacks=[ StreamingStdOutCallbackHandler() ],
         temperature=0.4
